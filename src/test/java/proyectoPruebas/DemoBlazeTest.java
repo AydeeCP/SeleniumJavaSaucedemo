@@ -1,0 +1,106 @@
+package proyectoPruebas;
+
+import java.time.Duration;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Description;
+import io.qameta.allure.Owner;
+import io.qameta.allure.testng.Tag;
+import org.openqa.selenium.WebDriver;
+
+public class DemoBlazeTest {
+	@Test(groups = {"regression"})
+	@Tag("regression")
+	@Owner("Aydee Callisaya")
+	@Description("Registro Exitos")
+	public void primeraPruebaSelenium() throws InterruptedException {
+		
+		WebDriverManager.chromedriver().setup();
+		
+		WebDriver driver = new ChromeDriver();
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); //Declarar la clase Wait
+		
+		Allure.step("Ir a la pagina https://www.demoblaze.com/");
+		driver.get("https://www.demoblaze.com/");
+		
+		driver.manage().window().maximize();
+		
+		WebElement btnsignUp = driver.findElement(By.id("signin2"));
+		WebElement signUpUserName = driver.findElement(By.id("sign-username"));
+		WebElement signUpPass = driver.findElement(By.id("sign-password"));
+		WebElement signBtnsignUp = driver.findElement(By.xpath("//button[text()='Sign up']"));
+		
+		btnsignUp.click();
+		wait.until(ExpectedConditions.visibilityOf(signUpUserName));
+		signUpUserName.sendKeys("aydeepc0051");
+		signUpPass.sendKeys("aydee");
+		signBtnsignUp.click();
+		
+		wait.until(ExpectedConditions.alertIsPresent());  //Espera a un alert
+		
+		Alert alert = driver.switchTo().alert();          // cambia el driver a la alerta
+		String message = alert.getText();                 // copiamos el mensaje de la alerta
+		alert.accept();                                   // Aceptamos la alerta
+		
+		
+		Allure.step("Validar mensaje de registro", () -> {
+		    Assert.assertEquals(message, "Sign up successful.",
+		            "El mensaje no es el esperado");
+		});
+		
+		//Assert.assertEquals(message, "Sign up successful.", "La alerta no tiene el mensaje esperado de registro exitoso");
+		//Assert.assertTrue(message=="Sign up successful.", "La alerta no tiene el mensaje esperado de registro exitoso");  
+		
+		WebElement btnLogin = driver.findElement(By.id("login2"));
+		btnLogin.click();
+
+		WebElement loginUser = driver.findElement(By.id("loginusername"));
+		WebElement loginPass = driver.findElement(By.id("loginpassword"));
+		WebElement btnLoginFinal = driver.findElement(By.xpath("//button[text()='Log in']"));
+
+		wait.until(ExpectedConditions.visibilityOf(loginUser));
+
+		loginUser.sendKeys("aydeepc0051");
+		loginPass.sendKeys("aydee");
+		btnLoginFinal.click();
+
+		// Esperar que aparezca el mensaje Welcome
+		WebElement welcomeText = wait.until(
+		        ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser"))
+		);
+
+		String welcomeMessage = welcomeText.getText();
+
+		// Assert del Welcome
+		Assert.assertEquals(welcomeMessage, "Welcome aydeepc0048",
+		        "El mensaje de bienvenida no es co"
+		        + "rrecto");
+		
+		driver.close();
+		
+	}
+	
+	@Test(groups = {"regression"})
+	@Tag("regression")
+	@Owner("Rodrigo Amurrio")
+	@Description("Login Exitos")
+	public void test2() {
+		Assert.assertTrue(true);
+	}
+	
+	@Test
+	public void test3() {
+		Assert.assertFalse(false);
+	}
+}
